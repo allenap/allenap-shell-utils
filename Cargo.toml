@@ -1,0 +1,13 @@
+[package]
+name = "allenap-shell-utils"
+version = "0.1.0"
+authors = ["Gavin Panella <gavinpanella@gmail.com>"]
+
+[[bin]]
+name = "allenap-shell-utils"
+path = "src/main.rs"
+doc = false
+
+[dependencies]
+clap = "^2.32"
+dirs = "^1.0.4"
