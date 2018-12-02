@@ -25,7 +25,8 @@ fn main() {
                         .hide_env_values(true)
                         .help("The PATH-like string to clean"),
                 )
-        }).get_matches();
+        })
+        .get_matches();
 
     process::exit(match matches.subcommand() {
         ("clean-path", Some(submatches)) => {
