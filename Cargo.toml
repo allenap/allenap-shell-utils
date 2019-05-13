@@ -13,3 +13,4 @@ path = "src/main.rs"
 [dependencies]
 clap = { version = "^4.3", features = ["default", "derive", "cargo", "env"] }
 dirs = "^5.0.0"
+notify = "^6.0.0"
