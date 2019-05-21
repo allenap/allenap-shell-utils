@@ -10,4 +10,4 @@ doc = false
 
 [dependencies]
 clap = "^2.32"
-dirs = "^1.0.4"
+dirs = "^1.0.5"
