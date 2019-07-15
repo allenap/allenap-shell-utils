@@ -21,6 +21,11 @@ enum Commands {
         #[arg(env = "PATH", hide_env_values = true)]
         path: ffi::OsString,
     },
+    /// Watch for changes in files or directories
+    Watch {
+        /// The files or directories to watch
+        paths: Vec<path::PathBuf>,
+    },
 }
 
 fn main() {
@@ -36,6 +41,34 @@ fn main() {
                 2
             }
         },
+        Commands::Watch { paths } => {
+            use notify::Watcher;
+
+            // Create a channel to receive the events.
+            let (tx, rx) = std::sync::mpsc::channel::<notify::Result<notify::Event>>();
+
+            // Create a watcher object, delivering debounced events.
+            // The notification back-end is selected based on the platform.
+            let mut watcher: notify::RecommendedWatcher =
+                notify::recommended_watcher(move |res| tx.send(res).unwrap()).unwrap();
+
+            eprintln!("Watcher: {:?}", watcher);
+
+            // Add a path to be watched. All files and directories at that path and
+            // below will be monitored for changes.
+            for path in paths {
+                watcher
+                    .watch(&path, notify::RecursiveMode::Recursive)
+                    .unwrap();
+            }
+
+            loop {
+                match rx.recv() {
+                    Ok(event) => println!("{:?}", event),
+                    Err(e) => println!("watch error: {:?}", e),
+                }
+            }
+        }
     })
 }
 
