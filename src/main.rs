@@ -1,7 +1,3 @@
-#[macro_use]
-extern crate clap;
-extern crate dirs;
-
 use std::collections;
 use std::env;
 use std::error;
@@ -9,8 +5,11 @@ use std::ffi;
 use std::path::{self, PathBuf};
 use std::process;
 
+extern crate clap;
+use clap::{crate_authors, crate_version};
+
 fn main() {
-    let matches = clap::App::new("allenap-shell-utils")
+    let mut app = clap::App::new("allenap-shell-utils")
         .version(crate_version!())
         .author(crate_authors!())
         .about("allenap's shell utilities.")
@@ -25,10 +24,10 @@ fn main() {
                         .hide_env_values(true)
                         .help("The PATH-like string to clean"),
                 )
-        }).get_matches();
+        });
 
-    process::exit(match matches.subcommand() {
-        ("clean-path", Some(submatches)) => {
+    process::exit(match app.get_matches_mut().subcommand() {
+        Some(("clean-path", submatches)) => {
             let path = submatches.value_of("path").unwrap();
             match clean_path(path) {
                 Ok(path) => {
@@ -41,10 +40,10 @@ fn main() {
                 }
             }
         }
-        (_, _) => {
+        _ => {
             // We'll only get here if no subcommand was given; a subcommand with
             // an unrecognised name is picked up by `App.get_matches()`.
-            eprintln!("{}", matches.usage());
+            eprintln!("{}", app.render_usage());
             1
         }
     })

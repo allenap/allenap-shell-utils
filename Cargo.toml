@@ -1,13 +1,13 @@
 [package]
+authors = ["Gavin Panella <gavinpanella@gmail.com>"]
 name = "allenap-shell-utils"
 version = "0.1.0"
-authors = ["Gavin Panella <gavinpanella@gmail.com>"]
 
 [[bin]]
+doc = false
 name = "allenap-shell-utils"
 path = "src/main.rs"
-doc = false
 
 [dependencies]
-clap = "^2.33"
-dirs = "^2.0.1"
+clap = {version = "^3.2", features = ["default", "cargo", "env"]}
+dirs = "^4.0.0"
