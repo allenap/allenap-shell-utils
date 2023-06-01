@@ -1,7 +1,9 @@
 [package]
 authors = ["Gavin Panella <gavinpanella@gmail.com>"]
 name = "allenap-shell-utils"
+description = "allenap's shell utilities"
 version = "0.1.0"
+edition = "2021"
 
 [[bin]]
 doc = false
@@ -9,5 +11,5 @@ name = "allenap-shell-utils"
 path = "src/main.rs"
 
 [dependencies]
-clap = {version = "^3.2", features = ["default", "cargo", "env"]}
-dirs = "^4.0.0"
+clap = { version = "^4.3", features = ["default", "derive", "cargo", "env"] }
+dirs = "^5.0.0"

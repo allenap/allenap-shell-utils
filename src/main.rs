@@ -2,63 +2,56 @@ use std::collections;
 use std::env;
 use std::error;
 use std::ffi;
+use std::ffi::OsStr;
 use std::path::{self, PathBuf};
 use std::process;
 
-extern crate clap;
-use clap::{crate_authors, crate_version};
+use clap::{command, Parser, Subcommand};
+
+#[derive(Parser)]
+#[command(
+    author, version, about,
+    after_help = "Doing shell-like things better and faster.",
+    long_about = None
+)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    /// Cleans a PATH-like string
+    CleanPath {
+        /// The PATH-like string to clean
+        #[arg(short, long, env = "PATH", hide_env_values = true)]
+        path: PathBuf,
+    },
+}
 
 fn main() {
-    let mut app = clap::App::new("allenap-shell-utils")
-        .version(crate_version!())
-        .author(crate_authors!())
-        .about("allenap's shell utilities.")
-        .after_help("Doing shell-like things better and faster.")
-        .subcommand({
-            clap::SubCommand::with_name("clean-path")
-                .about("cleans a PATH-like string")
-                .arg(
-                    clap::Arg::with_name("path")
-                        .value_name("PATH")
-                        .env("PATH")
-                        .hide_env_values(true)
-                        .help("The PATH-like string to clean"),
-                )
-        });
-
-    process::exit(match app.get_matches_mut().subcommand() {
-        Some(("clean-path", submatches)) => {
-            let path = submatches.value_of("path").unwrap();
-            match clean_path(path) {
-                Ok(path) => {
-                    println!("{}", path.to_string_lossy());
-                    0
-                }
-                Err(err) => {
-                    eprintln!("{}", err);
-                    2
-                }
+    let cli = Cli::parse();
+    process::exit(match cli.command {
+        Commands::CleanPath { path } => match clean_path(path) {
+            Ok(path) => {
+                println!("{}", path.to_string_lossy());
+                0
             }
-        }
-        _ => {
-            // We'll only get here if no subcommand was given; a subcommand with
-            // an unrecognised name is picked up by `App.get_matches()`.
-            eprintln!("{}", app.render_usage());
-            1
-        }
+            Err(err) => {
+                eprintln!("{}", err);
+                2
+            }
+        },
     })
 }
 
-fn clean_path(path: &str) -> Result<std::ffi::OsString, impl error::Error> {
-    let paths: Vec<PathBuf> = env::split_paths(path)
-        .filter_map(|pathbuf| expand_path(pathbuf))
-        .collect();
+fn clean_path<T>(path: T) -> Result<std::ffi::OsString, impl error::Error>
+where
+    T: AsRef<OsStr>,
+{
+    let paths: Vec<PathBuf> = env::split_paths(&path).filter_map(expand_path).collect();
     let mut unseen: collections::HashSet<&PathBuf> = paths.iter().collect();
-    env::join_paths(
-        paths
-            .iter()
-            .filter(|pathbuf| unseen.remove(pathbuf) && pathbuf.exists()),
-    )
+    env::join_paths(paths.iter().filter(|p| unseen.remove(p) && p.exists()))
 }
 
 fn expand_path(path: PathBuf) -> Option<path::PathBuf> {
