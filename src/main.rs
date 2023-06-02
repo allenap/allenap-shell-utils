@@ -24,7 +24,7 @@ enum Commands {
     /// Cleans a PATH-like string
     CleanPath {
         /// The PATH-like string to clean
-        #[arg(short, long, env = "PATH", hide_env_values = true)]
+        #[arg(env = "PATH", hide_env_values = true)]
         path: PathBuf,
     },
 }
