@@ -1,10 +1,4 @@
-use std::collections;
-use std::env;
-use std::error;
-use std::ffi;
-use std::ffi::OsStr;
-use std::path::{self, PathBuf};
-use std::process;
+use std::{collections, env, error, ffi, path, process};
 
 use clap::{command, Parser, Subcommand};
 
@@ -25,7 +19,7 @@ enum Commands {
     CleanPath {
         /// The PATH-like string to clean
         #[arg(env = "PATH", hide_env_values = true)]
-        path: PathBuf,
+        path: ffi::OsString,
     },
 }
 
@@ -45,17 +39,17 @@ fn main() {
     })
 }
 
-fn clean_path<T>(path: T) -> Result<std::ffi::OsString, impl error::Error>
+fn clean_path<T>(path: T) -> Result<ffi::OsString, impl error::Error>
 where
-    T: AsRef<OsStr>,
+    T: AsRef<ffi::OsStr>,
 {
-    let paths: Vec<PathBuf> = env::split_paths(&path).filter_map(expand_path).collect();
-    let mut unseen: collections::HashSet<&PathBuf> = paths.iter().collect();
+    let paths: Vec<path::PathBuf> = env::split_paths(&path).filter_map(expand_path).collect();
+    let mut unseen: collections::HashSet<&path::PathBuf> = paths.iter().collect();
     env::join_paths(paths.iter().filter(|p| unseen.remove(p) && p.exists()))
 }
 
-fn expand_path(path: PathBuf) -> Option<path::PathBuf> {
-    let mut abspath = PathBuf::new();
+fn expand_path(path: path::PathBuf) -> Option<path::PathBuf> {
+    let mut abspath = path::PathBuf::new();
     for (index, component) in path.components().enumerate() {
         match component {
             path::Component::CurDir => {
