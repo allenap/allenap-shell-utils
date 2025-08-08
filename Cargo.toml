@@ -2,8 +2,8 @@
 authors = ["Gavin Panella <gavinpanella@gmail.com>"]
 name = "allenap-shell-utils"
 description = "allenap's shell utilities"
-version = "0.1.0"
-edition = "2021"
+version = "0.2.0"
+edition = "2024"
 
 [[bin]]
 doc = false
