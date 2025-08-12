@@ -12,7 +12,7 @@ path = "src/main.rs"
 
 [dependencies]
 anyhow = "1.0.98"
-clap = { version = "4.5.43", features = ["default", "derive", "cargo", "env"] }
+clap = { version = "4.5.44", features = ["default", "derive", "cargo", "env"] }
 ctrlc = "3.4.7"
 dirs = "6.0.0"
 notify = { version = "8.2.0", features = ["serde"] }
